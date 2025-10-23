@@ -7,6 +7,10 @@ const port = process.env.PORT || 3009;
 
 app.use(express.json());
 
+app.get("/", (req, res) => {
+    res.send("Hello, World");
+});
+
 app.post('/sendEmail',async (req,res) => {
     console.log("API",process.env.API_KEY_RESEND);
 const resend = new Resend(process.env.API_KEY_RESEND);
