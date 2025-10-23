@@ -3,7 +3,7 @@ const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
 const { Resend} = require('resend');
-const port =3009;
+const port = process.env.PORT || 3009;
 
 app.use(express.json());
 
@@ -15,8 +15,8 @@ const resend = new Resend(process.env.API_KEY_RESEND);
     const { data, error } = await resend.emails.send({
      from: 'Acme <onboarding@resend.dev>',
     to: 'jlpg.lrm.lmpr@gmail.com',
-    subject: `Nuevo correo de ${values.nombre} desde la página web`,
-    html: `<p>Se recibió el mensaje ${values.mensaje} de parte de ${values.nombre} del correo ${values.correo}</p>`,
+    subject: `Nuevo correo de ${req.body.nombre} desde la página web`,
+    html: `<p>Se recibió el mensaje ${req.body.mensaje} de parte de parte de ${req.body.nombre} del correo ${req.body.correo}</p>`,
     text:''
         });
 
