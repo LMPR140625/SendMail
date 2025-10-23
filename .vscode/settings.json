@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/d70eaa11-3bcf-482e-ae1e-39dfa0911265/resourceGroups/jlpgProfile_group/providers/Microsoft.Web/sites/serviceEmailToJLPG",
+    "appService.deploySubpath": "."
+}
