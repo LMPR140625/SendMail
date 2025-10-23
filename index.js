@@ -7,7 +7,14 @@ const { Resend} = require('resend');
 const port = process.env.PORT || 3009;
 
 app.use(express.json());
-//app.use(cors());
+const corsOptions = {
+  origin: ['https://joseluisplatagonzalezservices.com'], // Specify allowed origins
+  optionsSuccessStatus: 200 // For legacy browser support
+};
+
+app.use(cors(corsOptions)); // Enable CORS with specified options
+
+
 app.get("/", (req, res) => {
     res.send("Hello, World lililililililililili!!");
 });
