@@ -3,12 +3,38 @@ const cors = require('cors');
 const app = express();
 const dotenv = require('dotenv');
 dotenv.config();
+const sql = require('mssql');
 const { Resend} = require('resend');
 const port = process.env.PORT || 3009;
 
+// TODO: Database configuration
+const config = {
+  user: process.env.SQLSERVER_USER,
+  password: process.env.SQLSERVER_PASSWORD,
+  // Notice public keyword in the connection string 
+  // if you were to host this server on Azure you wouldn't need the public part
+  server: process.env.SQLSERVER_SERVER,
+  database: process.env.SQLSERVER_DATABASE,
+  options: {
+    // THIS IS VERY IMPORTANT - Public endpoint is 3342, default is 1443
+    port: 1433, 
+    encrypt: true,
+  },
+};
+
+// Connect to the database
+sql.connect(config, (err) => {
+  if (err) {
+    console.error('Database connection failed:', err);
+  } else {
+    console.log('Connected to the database');
+  }
+});
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-  origin: ['https://joseluisplatagonzalezservices.com'], // Specify allowed origins
+  origin: ['https://joseluisplatagonzalezservices.com','http://localhost:5173'], // Specify allowed origins
   optionsSuccessStatus: 200 // For legacy browser support
 };
 
@@ -20,10 +46,7 @@ app.get("/", (req, res) => {
 });
 
 app.post('/sendEmail',async (req,res) => {
-    console.log("API",process.env.API_KEY_RESEND);
 const resend = new Resend(process.env.API_KEY_RESEND);
-    console.log("REQUES",req);
-
     const { data, error } = await resend.emails.send({
      from: 'Acme <onboarding@resend.dev>',
     to: 'jlpg.lrm.lmpr@gmail.com',
@@ -37,6 +60,36 @@ const resend = new Resend(process.env.API_KEY_RESEND);
   }
 
   res.status(200).json({ data });
+});
+
+
+//invitacion logic
+
+// Route to insert data into the database
+app.post('/insertReservation', async (req, res) => {
+  try {
+    const { familia, telefono, cantidadAsistentes, cantidadAdultos, cantidadInfantes, deseos} = req.body;
+    // Perform the database insert
+    const result = await sql.query`INSERT INTO INVITADOS (FAMILIA, TELEFONO,CANTIDADSOLICITADA, CANTIDADREAL,CANTIDADADULTOS,CANTIDADINFANTES,DESEOS,ESTATUS,FECHAREGISTRO) 
+    VALUES (${familia},${telefono}, ${cantidadAsistentes},0,${cantidadAdultos}, ${cantidadInfantes}, ${deseos}, 2,  GETDATE())`;
+
+    res.json({ message: 'Row added successfully!' });
+  } catch (error) {
+    console.error('Error inserting data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/validateNumberPhone', async (req, res) => {
+  console.log("reeeeq",req.body);
+  try {
+    const result = await sql.query`SELECT * FROM INVITADOS WHERE TELEFONO = ${req.body.telefono}`;
+    console.log("reeeeq",result);
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    console.error('Error executing query:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 app.listen( port, () => {
