@@ -34,7 +34,7 @@ sql.connect(config, (err) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-  origin: ['https://joseluisplatagonzalezservices.com','http://localhost:5173'], // Specify allowed origins
+  origin: ['https://joseluisplatagonzalezservices.com','https://blue-caribou-549039.hostingersite.com'], // Specify allowed origins
   optionsSuccessStatus: 200 // For legacy browser support
 };
 
