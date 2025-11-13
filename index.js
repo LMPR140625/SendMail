@@ -38,8 +38,8 @@ const corsOptions = {
   optionsSuccessStatus: 200 // For legacy browser support
 };
 
-app.use(cors(corsOptions)); // Enable CORS with specified options
-
+//app.use(cors(corsOptions)); // Enable CORS with specified options
+app.use(cors());
 
 app.get("/", (req, res) => {
     res.send("Hello, World lililililililililili!!");
@@ -68,23 +68,25 @@ const resend = new Resend(process.env.API_KEY_RESEND);
 // Route to insert data into the database
 app.post('/insertReservation', async (req, res) => {
   try {
-    const { familia, telefono, cantidadAsistentes, cantidadAdultos, cantidadInfantes, deseos} = req.body;
+    const { familia, telefono, cantidadAsistentes, cantidadAdultos, cantidadInfantes, 
+      deseos} = req.body;
     // Perform the database insert
-    const result = await sql.query`INSERT INTO INVITADOS (FAMILIA, TELEFONO,CANTIDADSOLICITADA, CANTIDADREAL,CANTIDADADULTOS,CANTIDADINFANTES,DESEOS,ESTATUS,FECHAREGISTRO) 
-    VALUES (${familia},${telefono}, ${cantidadAsistentes},0,${cantidadAdultos}, ${cantidadInfantes}, ${deseos}, 2,  GETDATE())`;
+    const result = await sql.query`UPDATE INVITADOS SET FAMILIA = ${familia}, 
+    CANTIDADSOLICITADA = ${cantidadAsistentes}, CANTIDADADULTOS = ${cantidadAdultos},
+    CANTIDADINFANTES = ${cantidadInfantes},DESEOS = ${deseos},
+     ESTATUS = 2,FECHAREGISTRO = GETDATE() WHERE TELEFONO = ${telefono}`;
 
-    res.json({ message: 'Row added successfully!' });
+    res.json(result.rowsAffected[0]);
   } catch (error) {
     console.error('Error inserting data:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-app.get('/validateNumberPhone', async (req, res) => {
-  console.log("reeeeq",req.body);
+app.post('/validateNumberPhone', async (req, res) => {
   try {
-    const result = await sql.query`SELECT * FROM INVITADOS WHERE TELEFONO = ${req.body.telefono}`;
-    console.log("reeeeq",result);
+    const result = await sql.query`SELECT * FROM INVITADOS WHERE TELEFONO = ${req.query.telefono}`;
+    console.log("data freom validate phone",result.recordset);
     res.status(200).json(result.recordset);
   } catch (error) {
     console.error('Error executing query:', error);
