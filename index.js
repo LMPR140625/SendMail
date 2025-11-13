@@ -38,8 +38,12 @@ const corsOptions = {
   optionsSuccessStatus: 200 // For legacy browser support
 };
 
-//app.use(cors(corsOptions)); // Enable CORS with specified options
-app.use(cors());
+
+// Prod
+app.use(cors(corsOptions)); // Enable CORS with specified options
+
+// Desarrollo
+//app.use(cors());
 
 app.get("/", (req, res) => {
     res.send("Hello, World lililililililililili!!");
