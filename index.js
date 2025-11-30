@@ -70,6 +70,31 @@ const resend = new Resend(process.env.API_KEY_RESEND);
 //invitacion logic
 
 // Route to insert data into the database
+app.get('/getPeople', async(req, res) => {
+  try {
+    const result = await sql.query`SELECT * FROM INVITADOS`;
+    console.log("data freom validate phone",result.recordset);
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    console.error('Error executing query:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.post('/insertNewNumber', async (req, res) => {
+  try {
+    const { telefono } = req.body;
+    // Perform the database insert
+    const result = await sql.query`INSERT INTO INVITADOS(TELEFONO,ESTATUS,FECHAREGISTRO)
+                                    VALUES ( ${telefono},GETDATE())`;
+
+    res.json(result.rowsAffected[0]);
+  } catch (error) {
+    console.error('Error inserting data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.post('/insertReservation', async (req, res) => {
   try {
     const { familia, telefono, cantidadAsistentes, cantidadAdultos, cantidadInfantes, 
