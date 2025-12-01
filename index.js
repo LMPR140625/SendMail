@@ -82,11 +82,12 @@ app.get('/getPeople', async(req, res) => {
 });
 
 app.post('/insertNewNumber', async (req, res) => {
+  console.error('body', req.body);
   try {
     const { telefono } = req.body;
     // Perform the database insert
     const result = await sql.query`INSERT INTO INVITADOS(TELEFONO,FAMILIA,CANTIDADSOLICITADA,CANTIDADREAL,CANTIDADADULTOS,CANTIDADINFANTES,DESEOS,ESTATUS,FECHAREGISTRO)
-                                    VALUES ( ${telefono},'',0,0,0,0,'',1,GETDATE())`;
+                                    VALUES ( ${req.body.telefono},'Número registrado',0,0,0,0,'',1,GETDATE())`;
 
     res.json(result.rowsAffected[0]);
   } catch (error) {
