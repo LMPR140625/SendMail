@@ -85,8 +85,8 @@ app.post('/insertNewNumber', async (req, res) => {
   try {
     const { telefono } = req.body;
     // Perform the database insert
-    const result = await sql.query`INSERT INTO INVITADOS(TELEFONO,ESTATUS,FECHAREGISTRO)
-                                    VALUES ( ${telefono},GETDATE())`;
+    const result = await sql.query`INSERT INTO INVITADOS(TELEFONO,FAMILIA,CANTIDADSOLICITADA,CANTIDADREAL,CANTIDADADULTOS,CANTIDADINFANTES,DESEOS,ESTATUS,FECHAREGISTRO)
+                                    VALUES ( ${telefono},'',0,0,0,0,'',1,GETDATE())`;
 
     res.json(result.rowsAffected[0]);
   } catch (error) {
